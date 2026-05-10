@@ -1,5 +1,5 @@
 /* global React */
-const { useState, useEffect } = React;
+const { useState, useEffect, useRef } = React;
 
 // ====== Inline SVG glyphs ======
 const Glyph = {
@@ -70,9 +70,9 @@ const Glyph = {
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(globalThis.scrollY > 40);
-    globalThis.addEventListener('scroll', onScroll);
-    return () => globalThis.removeEventListener('scroll', onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
   const navItems = [
     { label: 'Jewellery', items: ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'All Jewellery'] },
@@ -116,9 +116,9 @@ function Header() {
             ))}
           </nav>
           <div className="header__icons">
-            <button type="button" aria-label="Search">{Glyph.search}</button>
-            <button type="button" aria-label="Wishlist">{Glyph.heart}</button>
-            <button type="button" aria-label="Cart">{Glyph.bag}</button>
+            <button aria-label="Search">{Glyph.search}</button>
+            <button aria-label="Wishlist">{Glyph.heart}</button>
+            <button aria-label="Cart">{Glyph.bag}</button>
           </div>
         </div>
       </div>
@@ -127,7 +127,7 @@ function Header() {
 }
 
 // ====== Hero ======
-function Hero() {
+function Hero({ heroVariant }) {
   return (
     <section className="hero" data-screen-label="01 Hero">
       <div className="hero__text">
@@ -137,8 +137,8 @@ function Hero() {
           Fine jewellery shaped by sentiment, designed for modern women, and made to be remembered.
         </p>
         <div className="hero__cta">
-          <button type="button" className="btn">Explore Jewellery <span className="arrow">→</span></button>
-          <button type="button" className="btn btn--ghost">Book a Private Consultation</button>
+          <button className="btn">Explore Jewellery <span className="arrow">→</span></button>
+          <button className="btn btn--ghost">Book a Private Consultation</button>
         </div>
         <div style={{marginTop:48,display:'flex',alignItems:'center',gap:14,fontSize:10,letterSpacing:'0.32em',textTransform:'uppercase',color:'var(--mocha-soft)'}}>
           <span style={{width:24,height:1,background:'var(--champagne)'}}/>
@@ -146,7 +146,7 @@ function Hero() {
         </div>
       </div>
       <div className="hero__image">
-        <img src={globalThis.__resources.heroStone} alt="Step-cut moval champagne diamond" />
+        <img src={window.__resources.heroStone} alt="Step-cut moval champagne diamond" />
         <div className="hero__caption">The Signature Stone · 03.40 ct</div>
       </div>
     </section>
@@ -175,7 +175,7 @@ function SignatureStone() {
     <section className="stone" data-screen-label="02 Signature Stone">
       <div className="stone__grid">
         <div className="stone__image">
-          <img src={globalThis.__resources.heroStone} alt="Champagne diamond"/>
+          <img src={window.__resources.heroStone} alt="Champagne diamond"/>
           <div className="stone__annot a1"><span>Step-cut facets</span></div>
           <div className="stone__annot a2"><span>Moval silhouette</span></div>
           <div className="stone__annot a3"><span>Champagne hue</span></div>
@@ -229,7 +229,7 @@ function Sketch() {
           </div>
         </div>
         <div className="sketch__image">
-          <img src={globalThis.__resources.sketchAtelier} alt="Jull sketch sheet"/>
+          <img src={window.__resources.sketchAtelier} alt="Jull sketch sheet"/>
         </div>
       </div>
     </section>
@@ -242,7 +242,7 @@ function FirstPiece() {
     <section className="first" data-screen-label="04 First Piece">
       <div className="first__grid">
         <div className="first__image">
-          <img src={globalThis.__resources.firstPiece} alt="The first Jull piece"/>
+          <img src={window.__resources.firstPiece} alt="The first Jull piece"/>
         </div>
         <div className="first__copy">
           <span className="eyebrow">The First Piece · No. 001</span>
@@ -258,8 +258,8 @@ function FirstPiece() {
           <span className="first__signature">Jull</span>
           <span className="first__signature-name label">Founder · Designer</span>
           <div style={{marginTop:36,display:'flex',gap:18,flexWrap:'wrap'}}>
-            <button type="button" className="btn">View the Signature Piece <span className="arrow">→</span></button>
-            <button type="button" className="btn btn--ghost">Read the Story</button>
+            <button className="btn">View the Signature Piece <span className="arrow">→</span></button>
+            <button className="btn btn--ghost">Read the Story</button>
           </div>
         </div>
       </div>
@@ -406,8 +406,8 @@ function Bridal() {
           to be kept for generations.
         </p>
         <div className="bridal__cta">
-          <button type="button" className="btn" style={{background:'var(--champagne)',borderColor:'var(--champagne)',color:'var(--mocha)'}}>Bridal &amp; Bespoke <span className="arrow">→</span></button>
-          <button type="button" className="btn btn--ivory-ghost">Book a Consultation</button>
+          <button className="btn" style={{background:'var(--champagne)',borderColor:'var(--champagne)',color:'var(--mocha)'}}>Bridal &amp; Bespoke <span className="arrow">→</span></button>
+          <button className="btn btn--ivory-ghost">Book a Consultation</button>
         </div>
         <div style={{marginTop:56,display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24,paddingTop:32,borderTop:'1px solid var(--hairline-light)'}}>
           {['Private showroom','By appointment only','Worldwide delivery'].map(t => (
@@ -583,7 +583,7 @@ function Footer() {
 }
 
 // expose
-Object.assign(globalThis, {
+Object.assign(window, {
   Header, Hero, Marquee, SignatureStone, Sketch, FirstPiece,
   Collections, Categories, Icons, Bridal, Gifts, Materials,
   Journal, Newsletter, Footer

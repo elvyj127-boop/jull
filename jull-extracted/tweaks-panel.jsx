@@ -145,7 +145,7 @@ function useTweaks(defaults) {
     const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
       ? keyOrEdits : { [keyOrEdits]: val };
     setValues((prev) => ({ ...prev, ...edits }));
-    globalThis.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
   }, []);
   return [values, setTweak];
 }
@@ -167,8 +167,8 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     const panel = dragRef.current;
     if (!panel) return;
     const w = panel.offsetWidth, h = panel.offsetHeight;
-    const maxRight = Math.max(PAD, globalThis.innerWidth - w - PAD);
-    const maxBottom = Math.max(PAD, globalThis.innerHeight - h - PAD);
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
     offsetRef.current = {
       x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
       y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
@@ -181,8 +181,8 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     if (!open) return;
     clampToViewport();
     if (typeof ResizeObserver === 'undefined') {
-      globalThis.addEventListener('resize', clampToViewport);
-      return () => globalThis.removeEventListener('resize', clampToViewport);
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
     }
     const ro = new ResizeObserver(clampToViewport);
     ro.observe(document.documentElement);
@@ -195,14 +195,14 @@ function TweaksPanel({ title = 'Tweaks', children }) {
       if (t === '__activate_edit_mode') setOpen(true);
       else if (t === '__deactivate_edit_mode') setOpen(false);
     };
-    globalThis.addEventListener('message', onMsg);
-    globalThis.parent.postMessage({ type: '__edit_mode_available' }, '*');
-    return () => globalThis.removeEventListener('message', onMsg);
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
   }, []);
 
   const dismiss = () => {
     setOpen(false);
-    globalThis.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
   };
 
   const onDragStart = (e) => {
@@ -210,8 +210,8 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     if (!panel) return;
     const r = panel.getBoundingClientRect();
     const sx = e.clientX, sy = e.clientY;
-    const startRight = globalThis.innerWidth - r.right;
-    const startBottom = globalThis.innerHeight - r.bottom;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
     const move = (ev) => {
       offsetRef.current = {
         x: startRight - (ev.clientX - sx),
@@ -220,11 +220,11 @@ function TweaksPanel({ title = 'Tweaks', children }) {
       clampToViewport();
     };
     const up = () => {
-      globalThis.removeEventListener('mousemove', move);
-      globalThis.removeEventListener('mouseup', up);
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
     };
-    globalThis.addEventListener('mousemove', move);
-    globalThis.addEventListener('mouseup', up);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
   };
 
   if (!open) return null;
@@ -235,7 +235,7 @@ function TweaksPanel({ title = 'Tweaks', children }) {
            style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
         <div className="twk-hd" onMouseDown={onDragStart}>
           <b>{title}</b>
-          <button type="button" className="twk-x" aria-label="Close tweaks"
+          <button className="twk-x" aria-label="Close tweaks"
                   onMouseDown={(e) => e.stopPropagation()}
                   onClick={dismiss}>✕</button>
         </div>
@@ -320,11 +320,11 @@ function TweakRadio({ label, value, options, onChange }) {
     };
     const up = () => {
       setDragging(false);
-      globalThis.removeEventListener('pointermove', move);
-      globalThis.removeEventListener('pointerup', up);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
     };
-    globalThis.addEventListener('pointermove', move);
-    globalThis.addEventListener('pointerup', up);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
   };
 
   return (
@@ -385,11 +385,11 @@ function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) 
       onChange(clamp(Number(snapped.toFixed(decimals))));
     };
     const up = () => {
-      globalThis.removeEventListener('pointermove', move);
-      globalThis.removeEventListener('pointerup', up);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
     };
-    globalThis.addEventListener('pointermove', move);
-    globalThis.addEventListener('pointerup', up);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
   };
   return (
     <div className="twk-num">
@@ -418,7 +418,7 @@ function TweakButton({ label, onClick, secondary = false }) {
   );
 }
 
-Object.assign(globalThis, {
+Object.assign(window, {
   useTweaks, TweaksPanel, TweakSection, TweakRow,
   TweakSlider, TweakToggle, TweakRadio, TweakSelect,
   TweakText, TweakNumber, TweakColor, TweakButton,

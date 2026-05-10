@@ -70,9 +70,9 @@ const Glyph = {
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(globalThis.scrollY > 40);
-    globalThis.addEventListener('scroll', onScroll);
-    return () => globalThis.removeEventListener('scroll', onScroll);
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
   const navItems = [
     { label: 'Jewellery', items: ['Rings', 'Earrings', 'Necklaces', 'Bracelets', 'All Jewellery'] },
@@ -115,9 +115,9 @@ function Header() {
             ))}
           </nav>
           <div className="header__icons">
-            <button type="button" aria-label="Search">{Glyph.search}</button>
-            <button type="button" aria-label="Wishlist">{Glyph.heart}</button>
-            <button type="button" aria-label="Cart">{Glyph.bag}</button>
+            <button aria-label="Search">{Glyph.search}</button>
+            <button aria-label="Wishlist">{Glyph.heart}</button>
+            <button aria-label="Cart">{Glyph.bag}</button>
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ function Header() {
 }
 
 // ====== Hero ======
-function Hero() {
+function Hero({ heroVariant }) {
   return (
     <section className="hero" data-screen-label="01 Hero">
       <div className="hero__text">
@@ -136,8 +136,8 @@ function Hero() {
           Fine jewellery shaped by sentiment, designed for modern women, and made to be remembered.
         </p>
         <div className="hero__cta">
-          <button type="button" className="btn">Explore Jewellery <span className="arrow">→</span></button>
-          <button type="button" className="btn btn--ghost">Book a Private Consultation</button>
+          <button className="btn">Explore Jewellery <span className="arrow">→</span></button>
+          <button className="btn btn--ghost">Book a Private Consultation</button>
         </div>
         <div style={{marginTop:48,display:'flex',alignItems:'center',gap:14,fontSize:10,letterSpacing:'0.32em',textTransform:'uppercase',color:'var(--mocha-soft)'}}>
           <span style={{width:24,height:1,background:'var(--champagne)'}}/>
@@ -226,7 +226,7 @@ function SignatureStone() {
   const frameSrc = (n) => `assets/diamond-frames/jull_diamond_rot_${pad(n)}.webp`;
 
   useEffect(() => {
-    const prefersReduced = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReduced) {
       if (imgRef.current) imgRef.current.src = frameSrc(18);
       return;
@@ -244,12 +244,12 @@ function SignatureStone() {
         if (!priority.has(i)) { const img = new Image(); img.src = frameSrc(i); }
       }
     };
-    'requestIdleCallback' in globalThis ? globalThis.requestIdleCallback(loadRest) : setTimeout(loadRest, 2000);
+    'requestIdleCallback' in window ? window.requestIdleCallback(loadRest) : setTimeout(loadRest, 2000);
 
     const updateFrame = () => {
       if (!sectionRef.current || !imgRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
-      const scrollable = sectionRef.current.offsetHeight - globalThis.innerHeight;
+      const scrollable = sectionRef.current.offsetHeight - window.innerHeight;
       if (scrollable <= 0) return;
       const progress = Math.max(0, Math.min(1, -rect.top / scrollable));
       const newFrame = Math.min(LAST_FRAME, Math.floor(progress * LAST_FRAME));
@@ -264,10 +264,10 @@ function SignatureStone() {
       rafRef.current = requestAnimationFrame(updateFrame);
     };
 
-    globalThis.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     updateFrame();
     return () => {
-      globalThis.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
@@ -317,6 +317,12 @@ function SignatureStone() {
 
 // ====== Sketch ======
 function Sketch() {
+  const steps = [
+    { num: '01', name: 'A Sketch' },
+    { num: '02', name: 'A Stone' },
+    { num: '03', name: 'A Setting' },
+    { num: '04', name: 'An Heirloom' },
+  ];
   return (
     <section className="sketch-intro" data-screen-label="03 From Sketch to Heirloom">
       <div className="sketch-intro__head">
@@ -399,8 +405,8 @@ function FirstPiece() {
           <span className="first__signature">Jull</span>
           <span className="first__signature-name label">Founder · Designer</span>
           <div style={{marginTop:36,display:'flex',gap:18,flexWrap:'wrap'}}>
-            <button type="button" className="btn">View the Signature Piece <span className="arrow">→</span></button>
-            <button type="button" className="btn btn--ghost">Read the Story</button>
+            <button className="btn">View the Signature Piece <span className="arrow">→</span></button>
+            <button className="btn btn--ghost">Read the Story</button>
           </div>
         </div>
       </div>
@@ -547,8 +553,8 @@ function Bridal() {
           to be kept for generations.
         </p>
         <div className="bridal__cta">
-          <button type="button" className="btn" style={{background:'var(--champagne)',borderColor:'var(--champagne)',color:'var(--mocha)'}}>Bridal &amp; Bespoke <span className="arrow">→</span></button>
-          <button type="button" className="btn btn--ivory-ghost">Book a Consultation</button>
+          <button className="btn" style={{background:'var(--champagne)',borderColor:'var(--champagne)',color:'var(--mocha)'}}>Bridal &amp; Bespoke <span className="arrow">→</span></button>
+          <button className="btn btn--ivory-ghost">Book a Consultation</button>
         </div>
         <div style={{marginTop:56,display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:24,paddingTop:32,borderTop:'1px solid var(--hairline-light)'}}>
           {['Private showroom','By appointment only','Worldwide delivery'].map(t => (
@@ -629,12 +635,38 @@ function Materials() {
   );
 }
 
-// ====== Journal ======
+// ====== Campaign Split ======
+function CampaignSplit() {
+  return (
+    <section className="campaign-split" data-screen-label="02b Campaign">
+      <div className="campaign-split__left">
+        <img src="uploads/jull-monogram-transparent.png" alt="" className="campaign-split__mono"/>
+        <span className="campaign-split__label">Bridal · Bespoke · Heirloom</span>
+      </div>
+      <div className="campaign-split__right">
+        <div className="campaign-split__copy">
+          <span className="campaign-split__eyebrow">Bridal · Bespoke · Heirloom</span>
+          <h2 className="campaign-split__headline">Worn with <em>intention.</em></h2>
+          <p className="campaign-split__body">
+            A piece chosen not for a season, but for the feeling it carries forward.
+          </p>
+          <a className="campaign-split__cta">Begin Your Bespoke Journey <span>→</span></a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ====== Journal — Magazine Layout ======
 function Journal() {
+  const feature = {
+    cat: 'From Sketch to Heirloom', date: 'May 2026',
+    title: 'From Sketch to Heirloom.',
+    desc: 'The first Jull design — from hand-drawn notes to a piece shaped with sentiment and made to be kept.'
+  };
   const posts = [
-    { cat: 'Maison Notes', date: 'May 2026', title: 'What makes a modern heirloom?', desc: 'On the quiet objects we keep, and why a piece of jewellery becomes a story before it becomes a possession.' },
-    { cat: 'Sentiment', date: 'Apr 2026', title: 'Choosing jewellery with sentiment.', desc: 'A short guide to choosing pieces that feel personal — from the first wear to the years that follow.' },
-    { cat: 'Atelier', date: 'Mar 2026', title: 'Caring for fine jewellery.', desc: 'Soft cloths, careful storage, and the small daily rituals that keep gold and stones at their best.' },
+    { cat: 'The Stone', date: 'Apr 2026', title: 'Choosing a Champagne Stone.', desc: 'On the quiet warmth of a step-cut champagne diamond — and why it became the centre of everything Jull.' },
+    { cat: 'Atelier', date: 'Mar 2026', title: 'Jewellery Designed to Be Kept.', desc: 'What makes a piece last a lifetime, and how Jull designs with that question at the centre.', dark: true },
   ];
   return (
     <section className="journal" data-screen-label="11 Journal">
@@ -645,19 +677,28 @@ function Journal() {
         </div>
         <a className="link">All journal entries <span>→</span></a>
       </div>
-      <div className="grid-3" style={{maxWidth:1440,margin:'0 auto'}}>
-        {posts.map((p,i) => (
-          <article key={i} className="journal-card">
-            <div className="journal-card__image">[ Editorial · {p.cat} ]</div>
-            <div className="journal-card__meta">
-              <span>{p.cat}</span>
-              <span className="dot">◆</span>
-              <span>{p.date}</span>
-            </div>
-            <h3>{p.title}</h3>
-            <p>{p.desc}</p>
-          </article>
-        ))}
+      <div className="journal-mag">
+        <article className="journal-mag__feature">
+          <div className="journal-mag__feature-img"/>
+          <div className="journal-card__meta">
+            <span>{feature.cat}</span><span className="dot">◆</span><span>{feature.date}</span>
+          </div>
+          <h3 className="journal-mag__feature-title">{feature.title}</h3>
+          <p style={{fontSize:14,lineHeight:1.7,color:'var(--mocha-soft)',margin:'0 0 24px'}}>{feature.desc}</p>
+          <a className="link" style={{display:'inline-flex'}}>Read more <span>→</span></a>
+        </article>
+        <div className="journal-mag__stack">
+          {posts.map((p,i) => (
+            <article key={i} className={`journal-card ${p.dark ? 'journal-card--dark' : ''}`}>
+              <div className="journal-card__image"/>
+              <div className="journal-card__meta">
+                <span>{p.cat}</span><span className="dot">◆</span><span>{p.date}</span>
+              </div>
+              <h3>{p.title}</h3>
+              <p>{p.desc}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -723,8 +764,8 @@ function Footer() {
 }
 
 // expose
-Object.assign(globalThis, {
-  Header, Hero, Marquee, SignatureStone, Sketch, DesignBoard, FirstPiece,
+Object.assign(window, {
+  Header, Hero, Marquee, SignatureStone, CampaignSplit, Sketch, DesignBoard, FirstPiece,
   Collections, Categories, Icons, Bridal, Gifts, Materials,
-  PressFeatures, TaglineMoment, Journal, Newsletter, Footer
+  Journal, Newsletter, Footer
 });
